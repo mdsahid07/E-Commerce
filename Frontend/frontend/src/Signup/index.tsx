@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles.css';
-import { UserData } from '../models/UserData';
 
 interface SignupForm {
   username: string;
@@ -10,6 +9,8 @@ interface SignupForm {
   confirmPassword: string;
   address: string;
 }
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState<SignupForm>({ username: '', email: '', password: '', confirmPassword: '', address: '' });
@@ -33,7 +34,7 @@ const Signup: React.FC = () => {
     }
 
     try {
-      const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/signup', {
+      const response = await fetch(apiUrl +'/dev/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -42,12 +43,10 @@ const Signup: React.FC = () => {
           username: formData.username
         }),
       });
-      // console.log('resp: ' + JSON.stringify(response));
       if (!response.ok) {
         throw new Error('Signup failed');
       }
-      const data: UserData = await response.json();
-      localStorage.setItem('userData', JSON.stringify(data));
+      const data = await response.json();
       console.log('Signup successful:', data);
       navigate('/login');
     } catch (err) {

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles.css';
-import { UserData } from '../models/UserData';
 
 interface LoginForm {
   email: string;
   password: string;
 }
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<LoginForm>({ email: '', password: '' });
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/signin', {
+      const response = await fetch(apiUrl + '/dev/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

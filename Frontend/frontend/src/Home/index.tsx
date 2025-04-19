@@ -8,6 +8,8 @@ interface CartItem extends Item {
   quantity: number;
 }
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const Home: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -25,7 +27,7 @@ const Home: React.FC = () => {
     setIsLoggedIn(!!token);
     const fetchItems = async () => {
       try {
-        const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/getproduct');
+        const response = await fetch(apiUrl + '/dev/getproduct');
         if (!response.ok) 
           throw new Error('Failed to fetch items');
         const data: Item[] = await response.json();
@@ -66,7 +68,8 @@ const Home: React.FC = () => {
       .reduce((total, item) => total + item.Price * item.quantity, 0)
       .toFixed(2);
       try {
-        const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/placeorder', {
+        console.log('API: ' + apiUrl);
+        const response = await fetch(apiUrl +'/dev/placeorder', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
