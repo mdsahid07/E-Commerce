@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles.css';
+import { UserData } from '../models/UserData';
 
 interface LoginForm {
   email: string;
@@ -9,17 +10,45 @@ interface LoginForm {
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<LoginForm>({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const cachedUser = localStorage.getItem('authToken');
+    if (cachedUser) 
+      navigate('/');
+  }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
-    // Add your login logic here
-    navigate('/');
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('resp: ' + JSON.stringify(response));
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+        localStorage.setItem('authToken', data.token);
+        navigate('/');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
   };
 
   return (
@@ -55,9 +84,11 @@ const Login: React.FC = () => {
               required
             />
           </div>
+          {error && <div style={{color: "red"}}>{error}</div>}
           <button type="submit" className="login-form-button">
             Login
           </button>
+          {loading ? 'Logging in...' : 'Login'}
           <p className="login-link-paragraph">
             Don't have an account?{' '}
             <Link to="/signup" className="login-form-link">

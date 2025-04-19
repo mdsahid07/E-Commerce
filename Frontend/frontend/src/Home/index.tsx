@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Card from '../Card';
 import { Item } from '../models/Item';
+import { useNavigate } from 'react-router-dom';
 import './styles.css';
 
 interface CartItem extends Item {
@@ -14,34 +15,20 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
-
-  const dummyDatas: Item[] = [
-    {
-      "ProductId": "abc123",
-      "Name": "Wireless Mouse",
-      "Description": "Ergonomic wireless mouse with USB receiver",
-      "Price": 25.99,
-      "ImageUrl": "https://your-s3-bucket-url/mouse.jpg",
-      "CreatedAt": "2025-04-12T22:35:10.123Z"
-    },
-    {
-      "ProductId": "xyz456",
-      "Name": "Bluetooth Headphones",
-      "Description": "Noise cancelling over-ear headphones",
-      "Price": 89.99,
-      "ImageUrl": "https://your-s3-bucket-url/headphones.jpg",
-      "CreatedAt": "2025-04-11T17:12:55.789Z"
-    }
-  ];
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [token, setToken] = useState<string|null>();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setToken(token);
+    setIsLoggedIn(!!token);
     const fetchItems = async () => {
       try {
-        const response = await fetch('https://dummyjson.com/products');
+        const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/getproduct');
         if (!response.ok) 
           throw new Error('Failed to fetch items');
-        // const data: Item[] = await response.json().then(body => body.products);
-        const data = dummyDatas;
+        const data: Item[] = await response.json();
         setItems(data);
         setLoading(false);
       } catch (err) {
@@ -70,22 +57,51 @@ const Home: React.FC = () => {
     setCart(prevCart => prevCart.filter(cartItem => cartItem.ProductId !== itemId));
   };
 
-  const placeOrder = () => {
+  const placeOrder = async() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     const total = cart
       .reduce((total, item) => total + item.Price * item.quantity, 0)
       .toFixed(2);
-    setOrderSuccess(`Order placed successfully! Total amount: $${total}`);
-    setCart([]);
-    setTimeout(() => setOrderSuccess(null), 5000);
+      try {
+        const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/placeorder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer' + ' ' + token
+          },
+          body: JSON.stringify({ 
+            "items": cart,
+            "shippingAddress": ""
+          }),
+        });
+        if (!response.ok)
+          throw new Error('Order placement failed');
+        setOrderSuccess(`Order placed successfully! Total amount: $${total}`);
+        setCart([]);
+        setTimeout(() => setOrderSuccess(null), 5000);
+      } catch (error) {
+        setOrderSuccess('Failed to place order. Please try again.');
+        setTimeout(() => setOrderSuccess(null), 5000);
+      }
   };
 
   const filteredItems = items.filter(item =>
-    item.Name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.Description.toLowerCase().includes(searchQuery.toLowerCase()) 
   );
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/login');
+  };
 
   return (
     <div className="app">
       <div className="main-content">
+      <button onClick={handleLogout}>Logout</button>
         <h2>Product List</h2>
         <div style={{ textAlign: "end", marginBottom: "20px" }}>
           <input
@@ -115,6 +131,7 @@ const Home: React.FC = () => {
           </div>
         )}
       </div>
+
       <div className="cart-sidebar">
         <h3>Shopping Cart</h3>
         {orderSuccess && <div className="success-message">{orderSuccess}</div>}

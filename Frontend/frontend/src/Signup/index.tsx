@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './styles.css';
+import { UserData } from '../models/UserData';
 
 interface SignupForm {
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -10,26 +12,49 @@ interface SignupForm {
 }
 
 const Signup: React.FC = () => {
-  const [formData, setFormData] = useState<SignupForm>({ email: '', password: '', confirmPassword: '', address: '' });
+  const [formData, setFormData] = useState<SignupForm>({ username: '', email: '', password: '', confirmPassword: '', address: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      setError("Passwords don't match!");
+      setLoading(false);
       return;
     }
-    console.log('Signup submitted:', formData);
-    // Add your signup logic here
-    navigate('/login');
+
+    try {
+      const response = await fetch('https://pvfz8ptao9.execute-api.us-east-1.amazonaws.com/dev/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          username: formData.username
+        }),
+      });
+      // console.log('resp: ' + JSON.stringify(response));
+      if (!response.ok) {
+        throw new Error('Signup failed');
+      }
+      const data: UserData = await response.json();
+      localStorage.setItem('userData', JSON.stringify(data));
+      console.log('Signup successful:', data);
+      navigate('/login');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,6 +62,20 @@ const Signup: React.FC = () => {
       <div className="signup-form-container">
         <h2 className="signup-form-heading">Sign Up</h2>
         <form onSubmit={handleSubmit}>
+        <div className="signup-field-container">
+            <label className="signup-form-label" htmlFor="username">
+              Username
+            </label>
+            <input
+              type="username"
+              name="username"
+              id="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="signup-form-input"
+              required
+            />
+          </div>
           <div className="signup-field-container">
             <label className="signup-form-label" htmlFor="email">
               Email
@@ -79,22 +118,11 @@ const Signup: React.FC = () => {
               required
             />
           </div>
-          <div className="signup-field-container">
-            <label className="signup-form-label" htmlFor="address">
-            Address
-            </label>
-            <textarea
-              name="address"
-              id="address"
-              value={formData.address}
-              onChange={handleChangeTextArea}
-              className="signup-form-input"
-              required
-            />
-          </div>
+          {error && <div style={{color: "red"}}>{error}</div>}
           <button type="submit" className="signup-form-button">
             Sign Up
           </button>
+          {loading ? 'Signing up...' : 'Signup'}
           <p className="signup-link-paragraph">
             Already have an account?{' '}
             <Link to="/login" className="signup-form-link">
