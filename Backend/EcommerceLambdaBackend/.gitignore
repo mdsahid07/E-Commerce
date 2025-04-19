@@ -1,0 +1,33 @@
+# Ignore Visual Studio cache and settings
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore build artifacts
+*.dll
+*.exe
+*.app
+*.pdb
+
+# Ignore publish folders
+publish/
+out/
+
+# Ignore AWS Lambda .NET specific artifacts
+*.aws-lambda-tools-defaults.json
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore environment files
+.env
+
+# Ignore macOS/Linux system files
+.DS_Store
+Thumbs.db
