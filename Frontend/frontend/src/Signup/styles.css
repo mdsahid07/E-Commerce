@@ -44,6 +44,8 @@
     border-radius: 0.5rem;
     font-size: 1rem;
     box-sizing: border-box;
+    background: white;
+    color: #000;
   }
   
   .signup-form-input:focus {

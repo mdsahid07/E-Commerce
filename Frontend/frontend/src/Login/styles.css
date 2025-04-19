@@ -5,6 +5,7 @@
   align-items: center;
   min-height: 100vh; /* Full viewport height */
   background-color: #f0f2f5; /* Optional: light background for contrast */
+  width: 100%;
 }
 
 /* Center the form container and style it */
@@ -16,7 +17,6 @@
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
   max-width: 400px; /* Limit form width */
 }
 
@@ -48,6 +48,8 @@
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+  background: white;
+  color: #000;
 }
 
 /* Style the submit button */
