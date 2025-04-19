@@ -1,0 +1,72 @@
+/* signup.css */
+
+/* Outer container for centering the form */
+.signup-page-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6; /* Light gray background */
+  }
+  
+  /* Form container (white card) */
+  .signup-form-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 28rem; /* 448px */
+  }
+  
+  /* Form heading */
+  .signup-form-heading {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 700;
+    margin-bottom: 1.5rem; /* 24px */
+    text-align: center;
+    color: #1f2937; /* Dark gray */
+  }
+  
+  /* Label for inputs */
+  .signup-form-label {
+    display: block;
+    color: #4b5563; /* Medium gray */
+    margin-bottom: 0.5rem; /* 8px */
+    font-size: 1rem;
+  }
+  
+  /* Input fields */
+  .signup-form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem; /* 8px vertical, 12px horizontal */
+    border: 1px solid #e5e7eb; /* Light gray border */
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .signup-form-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #3b82f6; /* Blue focus ring */
+  }
+  
+  /* Containers for input fields */
+  .signup-field-container {
+    margin-bottom: 1rem; /* 16px */
+  }
+  
+  .signup-field-container-last {
+    margin-bottom: 1.5rem; /* 24px */
+  }
+  
+  /* Submit button */
+  .signup-form-button {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #3b82f6; /* Blue */
+    color: #ffffff;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight:
