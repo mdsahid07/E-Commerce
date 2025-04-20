@@ -1,49 +1,162 @@
-# AWS Lambda Empty Function Project
+# 📦 E-Commerce Backend - AWS Lambda with .NET Core
 
-This starter project consists of:
-* Function.cs - class file containing a class with a single function handler method
-* aws-lambda-tools-defaults.json - default argument settings for use with Visual Studio and command line deployment tools for AWS
+A serverless E-Commerce backend built with **.NET 8**, **AWS Lambda**, **DynamoDB**, **S3**, and **JWT authentication**. This backend supports product management, cart operations, and order placement through RESTful APIs exposed via API Gateway.
 
-You may also have a test project depending on the options selected.
+---
 
-The generated function handler is a simple method accepting a string argument that returns the uppercase equivalent of the input string. Replace the body of this method, and parameters, to suit your needs. 
+## 🚀 Features
 
-## Here are some steps to follow from Visual Studio:
+- User Signup and Signin with JWT token generation
+- Product creation and retrieval
+- Cart: Add, View, and Clear items
+- Place order and save to DynamoDB
+- Upload product images to S3
+- Authentication middleware for protected endpoints
 
-To deploy your function to AWS Lambda, right click the project in Solution Explorer and select *Publish to AWS Lambda*.
+---
 
-To view your deployed function open its Function View window by double-clicking the function name shown beneath the AWS Lambda node in the AWS Explorer tree.
+## 🛠️ Technologies Used
 
-To perform testing against your deployed function use the Test Invoke tab in the opened Function View window.
+- **.NET 8 Lambda (C#)**
+- **Amazon API Gateway**
+- **AWS Lambda**
+- **Amazon DynamoDB**
+- **Amazon S3**
+- **JWT Authentication**
+- **Amazon SNS** (for future use: order notifications)
 
-To configure event sources for your deployed function, for example to have your function invoked when an object is created in an Amazon S3 bucket, use the Event Sources tab in the opened Function View window.
+---
 
-To update the runtime configuration of your deployed function use the Configuration tab in the opened Function View window.
+## 📁 Project Structure
 
-To view execution logs of invocations of your function use the Logs tab in the opened Function View window.
-
-## Here are some steps to follow to get started from the command line:
-
-Once you have edited your template and code you can deploy your application using the [Amazon.Lambda.Tools Global Tool](https://github.com/aws/aws-extensions-for-dotnet-cli#aws-lambda-amazonlambdatools) from the command line.
-
-Install Amazon.Lambda.Tools Global Tools if not already installed.
 ```
-    dotnet tool install -g Amazon.Lambda.Tools
-```
-
-If already installed check if new version is available.
-```
-    dotnet tool update -g Amazon.Lambda.Tools
-```
-
-Execute unit tests
-```
-    cd "EcommerceLambdaBackend/test/EcommerceLambdaBackend.Tests"
-    dotnet test
+/EcommerceLambdaBackend
+│
+├── Models/                 # Data models (User, Product, Order, CartItem, etc.)
+├── Handlers/               # Lambda function handlers
+├── Services/               # JWT generation/validation, image upload, utilities
+├── Utils/                  # Helper and reusable logic
+├── EcommerceLambdaBackend.csproj
+└── README.md
 ```
 
-Deploy function to AWS Lambda
+---
+
+## 📦 API Endpoints
+
+| Endpoint         | Method | Description                            |
+| ---------------- | ------ | -------------------------------------- |
+| `/signup`        | POST   | Register a new user                    |
+| `/signin`        | POST   | Authenticate user and return JWT token |
+| `/products`      | POST   | Add a new product (with image upload)  |
+| `/products`      | GET    | Get all products                       |
+| `/cart/add`      | POST   | Add item to user's cart                |
+| `/cart/{userId}` | GET    | Get all items in user's cart           |
+| `/order/place`   | POST   | Place an order                         |
+
+> **Note**: JWT Bearer token must be sent in `Authorization` header for protected endpoints.
+
+Example:
+
 ```
-    cd "EcommerceLambdaBackend/src/EcommerceLambdaBackend"
-    dotnet lambda deploy-function
+Authorization: Bearer <your-token>
 ```
+
+---
+
+## 🔐 JWT Authentication
+
+JWT is used to protect endpoints. During `signin`, a token is generated. You must attach this token in subsequent requests to protected APIs.
+
+### Token Payload (Claims)
+
+Example decoded JWT payload:
+
+```json
+{
+  "sub": "userId-from-db",
+  "email": "user@example.com",
+  "username": "john_doe",
+  "iat": 1745090149,
+  "exp": 1745097349
+}
+```
+
+You can extract `email` from the token and fetch user details from DynamoDB.
+
+---
+
+## 💾 Sample DynamoDB JSON (Product)
+
+```json
+{
+  "ProductId": "prod_001",
+  "Name": "Wireless Mouse",
+  "Price": 29.99,
+  "Description": "Ergonomic wireless mouse with USB receiver",
+  "Category": "Electronics",
+  "ImageUrl": "https://your-bucket.s3.amazonaws.com/prod_001.jpg"
+}
+```
+
+## 💾 Sample Order Request
+
+```json
+{
+  "userId": "user_123",
+  "items": [
+    { "productId": "prod_001", "quantity": 2, "price": 29.99 },
+    { "productId": "prod_002", "quantity": 1, "price": 79.99 }
+  ],
+  "shippingAddress": "123 Main Street, NY",
+  "paymentMethod": "credit_card"
+}
+```
+
+---
+
+## 🧪 Local Testing
+
+You can use **Amazon Lambda Test Tool** for local testing.
+
+```bash
+dotnet lambda test-tool-8.0
+```
+
+Use Postman or cURL to send requests to the local endpoint.
+
+> For testing auth-protected routes, include the Authorization header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 📸 Image Upload to S3
+
+When adding a product, you can upload an image file. The backend stores the file to an S3 bucket and returns the image URL in the product record.
+
+Ensure your IAM Role has `s3:PutObject` permission for the bucket.
+
+---
+
+## ✅ To-Do Features
+
+- Email notifications on order placement (SNS)
+- Admin panel for managing products
+- Search and filter functionality
+- Unit tests with xUnit
+
+---
+
+## 📬 Contact
+
+If you have questions or need help, feel free to open an issue or contact me.
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
