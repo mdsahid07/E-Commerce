@@ -1,4 +1,4 @@
-# 📦 E-Commerce Application - Full Stack on AWS
+# 📦 E-Commerce Application - Full Stack on AWS Lambda
 
 A serverless full-stack E-Commerce web app using **React (frontend)** and **.NET 8 (backend)**, deployed entirely on **AWS** infrastructure. It supports product management, cart and order functionality, image uploads, authentication, and CI/CD deployment.
 
