@@ -18,7 +18,7 @@ const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [token, setToken] = useState<string|null>();
+  const [token, setToken] = useState<string | null>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const Home: React.FC = () => {
     const fetchItems = async () => {
       try {
         const response = await fetch(apiUrl + '/dev/getproduct');
-        if (!response.ok) 
+        if (!response.ok)
           throw new Error('Failed to fetch items');
         const data: Item[] = await response.json();
         setItems(data);
@@ -59,7 +59,7 @@ const Home: React.FC = () => {
     setCart(prevCart => prevCart.filter(cartItem => cartItem.ProductId !== itemId));
   };
 
-  const placeOrder = async() => {
+  const placeOrder = async () => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
@@ -67,33 +67,33 @@ const Home: React.FC = () => {
     const total = cart
       .reduce((total, item) => total + item.Price * item.quantity, 0)
       .toFixed(2);
-      try {
-        console.log('API: ' + apiUrl);
-        const response = await fetch(apiUrl +'/dev/placeorder', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer' + ' ' + token
-          },
-          body: JSON.stringify({ 
-            "items": cart,
-            "shippingAddress": ""
-          }),
-        });
-        if (!response.ok)
-          throw new Error('Order placement failed');
-        setOrderSuccess(`Order placed successfully! Total amount: $${total}`);
-        setCart([]);
-        setTimeout(() => setOrderSuccess(null), 5000);
-      } catch (error) {
-        setOrderSuccess('Failed to place order. Please try again.');
-        setTimeout(() => setOrderSuccess(null), 5000);
-      }
+    try {
+      console.log('API: ' + apiUrl);
+      const response = await fetch(apiUrl + '/dev/placeorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer' + ' ' + token
+        },
+        body: JSON.stringify({
+          "items": cart,
+          "shippingAddress": ""
+        }),
+      });
+      if (!response.ok)
+        throw new Error('Order placement failed');
+      setOrderSuccess(`Order placed successfully! Total amount: $${total}`);
+      setCart([]);
+      setTimeout(() => setOrderSuccess(null), 5000);
+    } catch (error) {
+      setOrderSuccess('Failed to place order. Please try again.');
+      setTimeout(() => setOrderSuccess(null), 5000);
+    }
   };
 
   const filteredItems = items.filter(item =>
     item.Name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.Description.toLowerCase().includes(searchQuery.toLowerCase()) 
+    item.Description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleLogout = () => {
@@ -104,9 +104,9 @@ const Home: React.FC = () => {
   return (
     <div className="app">
       <div className="main-content">
-      <button onClick={handleLogout}>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
         <h2>Product List</h2>
-        <div style={{ textAlign: "end", marginBottom: "20px" }}>
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <input
             id="search-input"
             type="text"
