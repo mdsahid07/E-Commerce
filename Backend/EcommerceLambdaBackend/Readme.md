@@ -99,17 +99,131 @@ You can extract `email` from the token and fetch user details from DynamoDB.
 }
 ```
 
-## 💾 Sample Order Request
+---
 
+## 📝 Sample API Requests & Responses
+
+### ✉️ Signup
+**POST** `/signup`
+
+**Request:**
+```json
+{
+  "email": "john@example.com",
+  "password": "P@ssword123",
+  "username": "john_doe"
+}
+```
+**Response:**
+```json
+{
+  "message": "User registered successfully"
+}
+```
+
+### 🔑 Signin
+**POST** `/signin`
+
+**Request:**
+```json
+{
+  "email": "john@example.com",
+  "password": "P@ssword123"
+}
+```
+**Response:**
+```json
+{
+  "token": "<JWT-Token>",
+  "username": "john_doe"
+}
+```
+
+### 📚 Get All Products
+**GET** `/products`
+
+**Response:**
+```json
+[
+  {
+    "productId": "prod_001",
+    "name": "Wireless Mouse",
+    "price": 29.99,
+    "description": "Ergonomic wireless mouse",
+    "category": "Electronics",
+    "imageUrl": "https://your-bucket.s3.amazonaws.com/prod_001.jpg"
+  }
+]
+```
+
+### ➕ Add Product
+**POST** `/products`
+
+**Headers:**
+```
+Authorization: Bearer <JWT-Token>
+```
+**Form-Data:**
+- name: Wireless Mouse
+- price: 29.99
+- description: Ergonomic wireless mouse
+- category: Electronics
+- image: [upload file]
+
+**Response:**
+```json
+{
+  "message": "Product created successfully",
+  "productId": "prod_001"
+}
+```
+
+### 🛒 Add To Cart
+**POST** `/cart/add`
+
+**Headers:**
+```
+Authorization: Bearer <JWT-Token>
+```
+**Request:**
+```json
+{
+  "userId": "user_123",
+  "productId": "prod_001",
+  "quantity": 2,
+  "price": 29.99
+}
+```
+**Response:**
+```json
+{
+  "message": "Item added to cart"
+}
+```
+
+### 💳 Place Order
+**POST** `/order/place`
+
+**Headers:**
+```
+Authorization: Bearer <JWT-Token>
+```
+**Request:**
 ```json
 {
   "userId": "user_123",
   "items": [
-    { "productId": "prod_001", "quantity": 2, "price": 29.99 },
-    { "productId": "prod_002", "quantity": 1, "price": 79.99 }
+    { "productId": "prod_001", "quantity": 2, "price": 29.99 }
   ],
   "shippingAddress": "123 Main Street, NY",
   "paymentMethod": "credit_card"
+}
+```
+**Response:**
+```json
+{
+  "message": "Order placed successfully",
+  "orderId": "order_456"
 }
 ```
 
@@ -126,7 +240,6 @@ dotnet lambda test-tool-8.0
 Use Postman or cURL to send requests to the local endpoint.
 
 > For testing auth-protected routes, include the Authorization header:
-
 ```
 Authorization: Bearer <token>
 ```
