@@ -104,7 +104,16 @@ const Home: React.FC = () => {
   return (
     <div className="app">
       <div className="main-content">
-        <button onClick={handleLogout}>Logout</button>
+        {/* <button onClick={handleLogout}>Logout</button> */}
+        {isLoggedIn ? (
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        ) : (
+          <button onClick={() => navigate('/login')} className="login-button">
+            Login
+          </button>
+        )}
         <h2>Product List</h2>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <input
