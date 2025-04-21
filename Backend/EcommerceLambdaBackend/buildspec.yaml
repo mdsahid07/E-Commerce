@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      dotnet: 8.0
+    commands:
+      - cd Backend/EcommerceLambdaBackend
+      - dotnet restore
+  build:
+    commands:
+      - dotnet build --configuration Release
+      - dotnet publish --configuration Release --output ./publish
+  post_build:
+    commands:
+      - echo "Packaging for Lambda"
+      - zip -r lambda.zip ./publish/*
+artifacts:
+  files:
+    - lambda.zip
+  base-directory: backend
