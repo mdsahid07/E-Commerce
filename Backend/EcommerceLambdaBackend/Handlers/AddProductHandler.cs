@@ -28,7 +28,7 @@ namespace EcommerceLambdaBackend.Handlers
 
             do
             {
-                int number = random.Next(100, 999);
+                int number = random.Next(10000, 99999);
                 productId = $"prod_{number}";
             }
             while (await _productService.ProductIdExistsAsync(productId));

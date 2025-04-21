@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using EcommerceLambdaBackend.Models;
@@ -74,16 +75,18 @@ namespace EcommerceLambdaBackend.Handlers
                     return CreateResponse(400, "Invalid order data");
 
                 // Ensure the user placing the order matches the user from token
-                
+
 
                 // Calculate the total amount of the order
-                var orderId = Guid.NewGuid().ToString();
+                var orderId = await GenerateUniqueOrderIdAsync();
+
                 decimal totalAmount = orderRequest.Items.Sum(item => item.Price * item.Quantity);
 
                 var order = new Order
                 {
                     OrderId = orderId,
                     UserId = userIdFromDb.UserId,
+                    Email= emailFromToken,
                     Items = orderRequest.Items,
                     ShippingAddress = orderRequest.ShippingAddress,
                     TotalAmount = totalAmount
@@ -104,6 +107,30 @@ namespace EcommerceLambdaBackend.Handlers
                 return CreateResponse(500, "Internal server error");
             }
         }
+        private async Task<string> GenerateUniqueOrderIdAsync()
+        {
+            string orderId;
+            var random = new Random();
+
+            do
+            {
+                int number = random.Next(100000, 999999);
+                orderId = $"order_{number}";
+            }
+            while (await OrderIdExistsAsync(orderId));
+
+            return orderId;
+        }
+        private async Task<bool> OrderIdExistsAsync(string orderId)
+        {
+            var response = await _dynamoDb.GetItemAsync("Orders", new Dictionary<string, AttributeValue>
+            {
+                ["orderId"] = new AttributeValue { S = orderId }
+            });
+
+            return response.Item != null && response.Item.Count > 0;
+        }
+
 
         // Helper method to create a standardized API response
         private APIGatewayProxyResponse CreateResponse(int statusCode, string message) =>

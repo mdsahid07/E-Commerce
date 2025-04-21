@@ -15,6 +15,8 @@ namespace EcommerceLambdaBackend.Models
 
         [DynamoDBProperty("userId")]
         public string UserId { get; set; }
+        [DynamoDBProperty("email")]
+        public string Email { get; set; }
 
         [DynamoDBProperty("items")]
         public List<OrderItem> Items { get; set; }
