@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - dotnet build --configuration Release
-      - dotnet publish --configuration Release --output ./publish
+      - dotnet publish --configuration Release
   post_build:
     commands:
       - echo "Packaging for Lambda"
