@@ -1,20 +1,24 @@
 version: 0.2
+
+env:
+  variables:
+    DOTNET_ROOT: /root/.dotnet
 phases:
   install:
     runtime-versions:
       dotnet: 8.0
+  pre_build:
     commands:
+      - echo Restore started on `date`
+      - export PATH="$PATH:/root/.dotnet/tools"
+      - pip install --upgrade awscli
       - cd Backend/EcommerceLambdaBackend
+      - dotnet clean
       - dotnet restore
   build:
     commands:
-      - dotnet build --configuration Release
-      - dotnet publish --configuration Release
-  post_build:
-    commands:
-      - echo "Packaging for Lambda"
-      - zip -r lambda.zip ./publish/*
-artifacts:
-  files:
-    - lambda.zip
-  base-directory: backend
+      - echo Build started on `date`
+      - dotnet new -i Amazon.Lambda.Templates::*
+      - dotnet tool install -g Amazon.Lambda.Tools
+      - dotnet tool update -g Amazon.Lambda.Tools
+      - dotnet lambda deploy-function "Dotnetlambda4"
