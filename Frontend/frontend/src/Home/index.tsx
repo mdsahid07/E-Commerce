@@ -3,6 +3,7 @@ import Card from '../Card';
 import { Item } from '../models/Item';
 import { useNavigate } from 'react-router-dom';
 import './styles.css';
+import { useAuth } from 'react-oidc-context';
 
 interface CartItem extends Item {
   quantity: number;
@@ -60,20 +61,21 @@ const Home: React.FC = () => {
   };
 
   const placeOrder = async () => {
-    if (!isLoggedIn) {
-      navigate('/login');
+    if (!auth.isAuthenticated) {
+      login();
       return;
     }
     const total = cart
       .reduce((total, item) => total + item.Price * item.quantity, 0)
       .toFixed(2);
     try {
-      console.log('API: ' + apiUrl);
       const response = await fetch(apiUrl + '/dev/placeorder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer' + ' ' + token
+          'Authorization': 'Bearer' + ' ' + auth.user?.access_token,
+          'UserPoolId': import.meta.env.VITE_API_POOL_ID,
+          'ClientId': import.meta.env.VITE_API_CLIENT_ID
         },
         body: JSON.stringify({
           "items": cart,
@@ -96,23 +98,36 @@ const Home: React.FC = () => {
     item.Description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+  // const handleLogout = () => {
+  //   localStorage.removeItem('authToken');
+  //   navigate('/login');
+  // };
+
+  const auth = useAuth();
+  const login = () => {
+    auth.signinRedirect();
+  }
+
+  const signOutRedirect = () => {
+    const clientId = import.meta.env.VITE_API_CLIENT_ID;
+    const logoutUri = import.meta.env.VITE_API_LOGOUT_URI;
+    const cognitoDomain = import.meta.env.VITE_API_COGNITO_DOMAIN;
+    auth.removeUser();
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
+
+  console.log("auth token: " + JSON.stringify(auth.user?.id_token))
+
 
   return (
     <div className="app">
       <div className="main-content">
-        {/* <button onClick={handleLogout}>Logout</button> */}
-        {isLoggedIn ? (
-          <button onClick={handleLogout} className="logout-button">
+        {auth.isAuthenticated ? (
+          <button onClick={signOutRedirect} className="logout-button">
             Logout
           </button>
         ) : (
-          <button onClick={() => navigate('/login')} className="login-button">
-            Login
-          </button>
+           <button onClick={login}>Login</button>
         )}
         <h2>Product List</h2>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
