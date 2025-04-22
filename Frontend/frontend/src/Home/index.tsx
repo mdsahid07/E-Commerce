@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Card from '../Card';
 import { Item } from '../models/Item';
-import { useNavigate } from 'react-router-dom';
 import './styles.css';
 import { useAuth } from 'react-oidc-context';
 
@@ -18,14 +17,8 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setToken(token);
-    setIsLoggedIn(!!token);
     const fetchItems = async () => {
       try {
         const response = await fetch(apiUrl + '/dev/getproduct');
