@@ -55,7 +55,7 @@ const Home: React.FC = () => {
 
   const placeOrder = async () => {
     if (!auth.isAuthenticated) {
-      login();
+      auth.signinRedirect();
       return;
     }
     const total = cart
@@ -108,9 +108,6 @@ const Home: React.FC = () => {
     auth.removeUser();
     window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
-
-  console.log("auth token: " + JSON.stringify(auth.user?.id_token))
-
 
   return (
     <div className="app">
