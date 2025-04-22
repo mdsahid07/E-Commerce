@@ -3,7 +3,7 @@ import './index.css'
 import Home from './Home';
 // import Login from './Login/index.tsx';
 // import Signup from './Signup/index.tsx';
-import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 
 const cognitoAuthConfig = {
@@ -22,12 +22,11 @@ createRoot(document.getElementById('root')!).render(
           {/* <Route path="/signup" element={<Signup />} /> */}
           {/* <Route path="/home" element={<Home />} /> */}
           <Route
-            path="/home"
+            path="/"
             element={
                 <Home />
             }
           />
-          <Route path="/" element={<Navigate to="/home" />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

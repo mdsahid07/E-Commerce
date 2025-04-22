@@ -97,7 +97,10 @@ const Home: React.FC = () => {
   // };
 
   const auth = useAuth();
+  console.log("Auth: " + JSON.stringify(auth))
+
   const login = () => {
+    console.log("Login Auth: " + JSON.stringify(auth))
     auth.signinRedirect();
   }
 
